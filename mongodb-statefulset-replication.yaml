@@ -50,7 +50,7 @@ parameters:
   - name: MONGODB_IMAGE
     displayName: "MongoDB Docker Image"
     description: "A reference to a supported MongoDB Docker image."
-    value: "registry.access.redhat.com/rhscl/mongodb-32-rhel7:3.2"
+    value: "registry.redhat.io/rhscl/mongodb-36-rhel7"
     required: true
 
   - name: MONGODB_SERVICE_NAME
@@ -120,13 +120,16 @@ objects:
         name: "${MONGODB_SERVICE_NAME}"
 
   - kind: StatefulSet
-    apiVersion: apps/v1beta1
+    apiVersion: apps/v1
     metadata:
       name: "${MONGODB_SERVICE_NAME}"
     spec:
       # pets get DNS/hostnames that follow the pattern: ${metadata.name}-NUM.${spec.serviceName}.default.svc.cluster.local
       serviceName: "${MONGODB_SERVICE_NAME}-internal"
       replicas: 3
+      selector:
+        matchLabels:
+          name: "${MONGODB_SERVICE_NAME}"
       # describes the pod that will be created if insufficient replicas are detected
       template:
         metadata:
